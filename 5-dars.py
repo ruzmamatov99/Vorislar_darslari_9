@@ -50,3 +50,13 @@
 # txt = "Hello, welcome to my world."
 # x = txt.find(".")
 # print(x)
+
+
+# ism = input("Ismingizni kiriting: ")
+# yosh = int(input("Yoshingizni kiriting: "))
+# manzil = input("Manzilingizni kiriting: ")
+# maktab = input("Maktabingizni kiriting: ")
+# qiziqish = input("Qiziqishlaringizni kiriting: ")
+# jura = input("Yaqin insonlaringizni kiriting: ")
+
+# print(f"Hurmatli {ism.title()} ning yoshi {yosh} da, \n Manzili {manzil.title()} da joylashgan \n {maktab} maktabda o'qiydi. \n Uning qiziqishlari {qiziqish.title()} va Eng yaqin insonlari {jura.title()} dan iborat.")
