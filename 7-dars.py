@@ -1,107 +1,167 @@
 import tkinter as tk
 from tkinter import font
 
-def ekranga_kiritish(qiymat):
-    """Tugmalar bosilganda qiymatni ekran (kiritish maydoni)ga qo'shadi."""
-    hozirgi = kiritish_maydoni.get()
-    kiritish_maydoni.delete(0, tk.END)
-    kiritish_maydoni.insert(0, hozirgi + str(qiymat))
+class ModernCalculator(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("🧮 Neon Kalkulyator")
+        self.geometry("340x500")
+        self.resizable(False, False)
+        self.attributes("-topmost", True)
+        self.configure(bg="#0d0d1a")
 
-def tozalash():
-    """Ekran (kiritish maydoni)ni tozalaydi."""
-    kiritish_maydoni.delete(0, tk.END)
+        self.expression = ""
+        self.display_var = tk.StringVar()
 
-def hisoblash():
-    """Kiritish maydonidagi ifodani hisoblaydi va natijani ko'rsatadi."""
-    try:
-        ifoda = kiritish_maydoni.get()
-        # 'eval' xavfli bo'lishi mumkin, lekin oddiy kalkulyator uchun qulay
-        natija = str(eval(ifoda))
-        tozalash()
-        kiritish_maydoni.insert(0, natija)
-    except ZeroDivisionError:
-        tozalash()
-        kiritish_maydoni.insert(0, "Nolga bo'lish xatosi")
-    except Exception:
-        tozalash()
-        kiritish_maydoni.insert(0, "Xatolik")
+        # Shriftlar
+        self.display_font = font.Font(family="Consolas", size=26, weight="bold")
+        self.btn_font = font.Font(size=14, weight="bold")
 
-# 1. Asosiy oyna (window) yaratish
-oyna = tk.Tk()
-oyna.title("Kalkulyator")
-oyna.geometry("300x450")
-oyna.resizable(0, 0) # O'lchamini o'zgartirishni o'chirish
+        # Displey
+        display = tk.Entry(
+            self,
+            textvariable=self.display_var,
+            font=self.display_font,
+            bg="#191933",
+            fg="#00ffcc",
+            justify="right",
+            bd=0,
+            relief="flat",
+        )
+        display.pack(fill="x", padx=15, pady=20, ipady=15)
+        display.focus_set()
 
-# Ranglar sozlamasi
-rang_fon = "#2E2E2E"       # To'q kulrang
-rang_son = "#FFFFFF"       # Oq (sonlar rangi)
-rang_amal = "#FFA500"      # To'q sariq (amal tugmalari)
-rang_tozalash = "#8B0000"  # To'q qizil (Tozalash/C)
-rang_hisoblash = "#008000" # Yashil (=)
+        # Tugmalar
+        buttons = [
+            ["C", "←", "%", "/"],
+            ["7", "8", "9", "*"],
+            ["4", "5", "6", "-"],
+            ["1", "2", "3", "+"],
+            ["±", "0", ".", "="],
+        ]
 
-# Oyna fonini sozlash
-oyna.configure(bg=rang_fon)
+        # Ranglar
+        self.colors = {
+            "num": "#2a2a4a",
+            "op": "#0066ff",
+            "sp": "#ff0055",
+            "eq": "#00cc88",
+        }
 
-# Fontni sozlash
-katta_font = font.Font(family='Arial', size=20)
-tugma_font = font.Font(family='Arial', size=14, weight='bold')
+        frame = tk.Frame(self, bg="#0d0d1a")
+        frame.pack()
 
-# 2. Natija/Kiritish maydoni (Entry Widget)
-kiritish_maydoni = tk.Entry(oyna, 
-                            width=15, 
-                            font=katta_font, 
-                            bd=10, 
-                            relief=tk.SUNKEN, # Kiritish maydonining shakli
-                            justify='right', # Matnni o'ng tomonga hizalash
-                            bg="#F0F0F0", # Yengil kulrang fon
-                            fg="#000000") # Qora matn
-kiritish_maydoni.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        for r, row in enumerate(buttons):
+            for c, char in enumerate(row):
+                color = (
+                    self.colors["num"]
+                    if char in "0123456789."
+                    else self.colors["op"]
+                    if char in ["+", "-", "*", "/", "%"]
+                    else self.colors["eq"]
+                    if char == "="
+                    else self.colors["sp"]
+                )
 
-# 3. Tugmalar Layoutini yaratish
-tugma_matnlari = [
-    ('C', 1, 0, rang_tozalash), ('/', 1, 3, rang_amal),
-    ('7', 2, 0, rang_son), ('8', 2, 1, rang_son), ('9', 2, 2, rang_son), ('*', 2, 3, rang_amal),
-    ('4', 3, 0, rang_son), ('5', 3, 1, rang_son), ('6', 3, 2, rang_son), ('-', 3, 3, rang_amal),
-    ('1', 4, 0, rang_son), ('2', 4, 1, rang_son), ('3', 4, 2, rang_son), ('+', 4, 3, rang_amal),
-    ('0', 5, 0, rang_son), ('.', 5, 1, rang_son), ('=', 5, 2, rang_hisoblash), # '=' tugmasi keyinroq qo'shiladi
-]
+                btn = tk.Button(
+                    frame,
+                    text=char,
+                    font=self.btn_font,
+                    fg="white",
+                    bg=color,
+                    activebackground="#333366",
+                    activeforeground="#00ffcc",
+                    bd=0,
+                    width=6,
+                    height=2,
+                    relief="flat",
+                    command=lambda ch=char: self.on_click(ch),
+                )
+                btn.grid(row=r, column=c, padx=6, pady=6, sticky="nsew")
 
-# 4. Tugmalarni yaratish va joylashtirish
-r = 1 # Qator (row) 0 band
-for (matn, row, col, rang) in tugma_matnlari:
-    # '=' tugmasi butun qatorni egallashi uchun alohida sozlanadi
-    if matn == '=':
-        tugma = tk.Button(oyna, 
-                          text=matn, 
-                          font=tugma_font, 
-                          fg=rang_fon, # Matn rangi qora
-                          bg=rang, 
-                          padx=20, 
-                          pady=20,
-                          relief=tk.RAISED, # Tugmaning shakli/ko'rinishi
-                          command=hisoblash)
-        # "=" tugmasi 5-qatorning 2-va 3-ustunlarini egallaydi
-        tugma.grid(row=row, column=col, columnspan=2, sticky="nsew", padx=5, pady=5)
-    
-    # Qolgan tugmalar
-    else:
-        tugma = tk.Button(oyna, 
-                          text=matn, 
-                          font=tugma_font, 
-                          fg=rang_fon if rang == rang_tozalash else "#000000", # C tugmasini qora fon ustida oq rang qilish
-                          bg=rang, 
-                          padx=20, 
-                          pady=20,
-                          relief=tk.RAISED,
-                          command=lambda m=matn: tozalash() if m == 'C' else ekranga_kiritish(m))
-        
-        tugma.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+        for i in range(4):
+            frame.columnconfigure(i, weight=1)
 
-# 5. Tugmalarni oynaga moslash (kengaytirish)
-for i in range(1, 6):
-    oyna.grid_rowconfigure(i, weight=1)
-for i in range(4):
-    oyna.grid_columnconfigure(i, weight=1)
+        # 🔹 Klaviatura boshqaruvlarini bog‘laymiz
+        self.bind("<Return>", lambda e: self.calculate())  # Enter
+        self.bind("<BackSpace>", lambda e: self.backspace())  # Backspace
+        self.bind("<Escape>", lambda e: self.clear())  # Esc
+        for key in "0123456789+-*/.%":
+            self.bind(key, lambda e, ch=key: self.key_input(ch))
 
-# Asosiy tsiklni ishga tushirish (oynani doimo ochiq ushlab turish)
-oyna.mainloop()
+    def key_input(self, ch):
+        """Klaviaturadan raqam va belgi bosilganda"""
+        if self.expression and self.expression[-1] in "+-*/" and ch in "+-*/":
+            self.expression = self.expression[:-1] + ch
+        else:
+            self.expression += ch
+        self.display_var.set(self.expression)
+
+    def on_click(self, ch):
+        if ch == "C":
+            self.clear()
+        elif ch == "←":
+            self.backspace()
+        elif ch == "=":
+            self.calculate()
+        elif ch == "±":
+            self.toggle_sign()
+        elif ch == "%":
+            self.percent()
+        else:
+            if self.expression and self.expression[-1] in "+-*/" and ch in "+-*/":
+                self.expression = self.expression[:-1] + ch
+            else:
+                self.expression += str(ch)
+            self.display_var.set(self.expression)
+
+    def clear(self):
+        self.expression = ""
+        self.display_var.set("")
+
+    def backspace(self):
+        self.expression = self.expression[:-1]
+        self.display_var.set(self.expression)
+
+    def safe_eval(self, expr):
+        try:
+            return eval(expr)
+        except Exception:
+            return None
+
+    def calculate(self):
+        if not self.expression:
+            return
+        while self.expression and self.expression[-1] in "+-*/.":
+            self.expression = self.expression[:-1]
+
+        expr = self.expression.replace("%", "/100")
+        result = self.safe_eval(expr)
+
+        if result is None:
+            self.display_var.set("0")
+            self.expression = ""
+        else:
+            if isinstance(result, float) and result.is_integer():
+                result = int(result)
+            self.expression = str(result)
+            self.display_var.set(self.expression)
+
+    def toggle_sign(self):
+        val = self.safe_eval(self.expression)
+        if val is not None:
+            val = -val
+            self.expression = str(val)
+            self.display_var.set(self.expression)
+
+    def percent(self):
+        val = self.safe_eval(self.expression)
+        if val is not None:
+            val = val / 100
+            self.expression = str(val)
+            self.display_var.set(self.expression)
+
+
+if __name__ == "__main__":
+    app = ModernCalculator()
+    app.mainloop()
