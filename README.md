@@ -1,3 +1,5 @@
+<h1 align="center">Ro'zmamatov Kamolbek</h1>
+
 <h1 align="center">SaLoM</h1>
 
 <h2 align="center">🔥 Mening texnologiyalarim 🔥</h2>
