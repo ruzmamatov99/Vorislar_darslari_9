@@ -5,6 +5,7 @@ methods(.sort())
 function(sum(), min(), max(), sorted(), list())
 Ro'yxatlardan nusxa olish
 tuple() o'zgarmas ro'yxat
+githubdan matn yozdik
 """
 
 # davlatlar = ["Uzbekistan", "Brazilya", "Ispaniya", "Vatikan", "Qazag'istan", "Turkiya"]
