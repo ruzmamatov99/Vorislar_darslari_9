@@ -77,3 +77,25 @@
 # for i in range(1, n + 1):
 #     p *= i
 # print("Ko‘paytma (faktorial):", p)
+
+
+
+# n = int(input('n ga qiymat kiriting:'))
+# korinish = []
+
+# sonlar = list(range(1, n+1))
+
+# for i in  sonlar:
+#     l = f"1/{i}"
+#     korinish.append(l)
+# print(korinish)
+
+n = int(input('n ga qiymat kiriting:'))
+korinish = []
+
+sonlar = list(range(0, n+1))
+#sonlar = [0,1,2,3,4,5,.......n]
+for i in sonlar:
+    l =f"{(i+n)**2}"
+    korinish.append(l)
+print(korinish)    
